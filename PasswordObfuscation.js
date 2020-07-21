@@ -33,8 +33,8 @@ function PasswordObfuscation(passwordCharSet, deleteChar, passWordLength) {
         let last = createLast();
         if (printLog) {
             console.log("原始密码：" + password.join(""));
-            console.log("confusedPassword:" + confusedPassword);
-            console.log("last:" + last);
+            console.log("混淆后密码：" + confusedPassword);
+            console.log("最后加入的干扰字符串:" + last);
         }
         return confusedPassword.concat(last).join("");
     };

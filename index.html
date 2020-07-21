@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>生成屏幕时间控制密码</title>
+    <style>
+        p {
+            word-wrap: break-word;
+            word-break: break-all;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
-<p id="password" style="font-size: 2em"></p>
-<script type="text/javascript" src="PasswordObfuscation.js" ></script>
+<p id="password" style="font-size: 2em">☒530☒2☒69☒47☒862☒6☒533☒1☒645☒86☒9☒☒☒63☒☒☒7</p>
+<script type="text/javascript" src="PasswordObfuscation.js"></script>
 <script type="text/javascript">
     let passwordObfuscation = new PasswordObfuscation("0123456789", "☒", 6);
     let password = passwordObfuscation.create();
-    console.log(password);
     document.getElementById("password").innerText = password;
 </script>
 </body>
