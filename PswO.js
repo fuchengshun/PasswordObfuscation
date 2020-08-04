@@ -19,7 +19,7 @@ function PswO(passwordCharSet, deleteChar, passWordLength) {
     this.numberProbability = 0.7;
 
     /**
-     * 生成混淆密码，最终混淆结果，包含两部分，原始密码*2份拼接混淆后，加上结尾混淆字符串
+     * 生成混淆密码，最终混淆结果，包含3部分：原始密码混淆 + 原始密码混淆 + 结尾混淆字符串
      * @returns {[]} 返回混淆后的密码和原始密码组成的数组
      */
     this.create = () => {
