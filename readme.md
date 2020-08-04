@@ -6,14 +6,14 @@
 
 原始密码 
 
-633111
+246627
 
 混淆后密码 
 
-☒59☒☒☒12☒0☒0☒☒643☒1☒☒06☒7☒☒3☒330☒6☒9☒115☒937☒9☒☒☒166☒331☒11108☒☒059
-
+☒420☒5☒☒☒4☒1☒273☒☒8☒48☒666☒27212☒☒8☒466☒627☒☒☒
 ## 使用方法
 ```
-let passwordObfuscation = new PasswordObfuscation("0123456789", "☒", 6);
-let password = passwordObfuscation.create();
+let psw = new PswO("0123456789", "☒", 6).create();
+console.log(psw[0]);
+console.log(psw[1]);
 ```

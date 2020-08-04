@@ -6,7 +6,7 @@
  * @param passWordLength 原始密码长度 eg，iPhone 4位，荣耀9x 6位
  * @constructor
  */
-function PasswordObfuscation(passwordCharSet, deleteChar, passWordLength) {
+function PswO(passwordCharSet, deleteChar, passWordLength) {
     //密码字符集，从中取生成密码的字符，eg "0123456789"
     this.passwordCharSet = passwordCharSet;
     //原始密码长度，iPhone屏幕使用时间密码4位，荣耀健康使用时间密码6位
@@ -16,27 +16,27 @@ function PasswordObfuscation(passwordCharSet, deleteChar, passWordLength) {
     //密码字符和删除字符的最长连续字符数
     this.maxContinuousLength = 3;
     //下一个字符选密码字符集中的字符的概率，范围[0,1]，值越大，混淆后长度趋向于越短
-    this.numberProbability = {
-        normal: 0.5,
-        big: 0.75
-    };
+    this.numberProbability = 0.7;
 
     /**
      * 生成混淆密码，最终混淆结果，包含两部分，原始密码*2份拼接混淆后，加上结尾混淆字符串
-     * @returns {string}
+     * @returns {[]} 返回混淆后的密码和原始密码组成的数组
      */
     this.create = () => {
         // let printLog = false;
         let printLog = true;
-        let password = generatePassword();
-        let confusedPassword = confusePassword(password, this.deleteChar);
+        let psw = generatePassword();
+        let pswO1 = confusePassword(psw, this.deleteChar);
+        let pswO2 = confusePassword(psw, this.deleteChar);
         let last = createLast();
         if (printLog) {
-            console.log("原始密码：" + password.join(""));
-            console.log("混淆后密码：" + confusedPassword);
-            console.log("最后加入的干扰字符串:" + last);
+            console.log("原始密码：" + psw.join(""));
+            console.log("混淆后密码1：" + pswO1);
+            console.log("混淆后密码2：" + pswO2);
+            console.log("尾部干扰字符串:" + last);
         }
-        return confusedPassword.concat(last).join("");
+        let confused = pswO1.concat(pswO2).concat(last).join("");
+        return [confused, psw.join("")];
     };
 
     /**
@@ -46,7 +46,7 @@ function PasswordObfuscation(passwordCharSet, deleteChar, passWordLength) {
      * @returns {[]} 密码数组
      */
     let generatePassword = () => {
-        return generateRandomStr(this.passwordCharSet,this.passWrodLength);
+        return generateRandomStr(this.passwordCharSet, this.passWrodLength);
     };
     /**
      * 生成随机字符串
@@ -54,7 +54,7 @@ function PasswordObfuscation(passwordCharSet, deleteChar, passWordLength) {
      * @param length 输出字符串长度
      * @returns {[]}
      */
-    let generateRandomStr = (charSet,length) => {
+    let generateRandomStr = (charSet, length) => {
         let passWord = [];
         for (let i = 0; i < length; i++) {
             let index = Math.random() * charSet.length;
@@ -97,50 +97,35 @@ function PasswordObfuscation(passwordCharSet, deleteChar, passWordLength) {
 
     /**
      * 使用删除字符和原始密码混淆，生成新密码
-     * @param password 原始密码2份拼接 eg 440587440587（原始密码440587）
+     * @param password 原始密码 eg 357674
      * @param char 字符删除，eg "×"
-     * @returns {[]} 混淆后的密码数组 eg [☒,☒,3,1,4,☒,☒,1,☒,1,4,☒,☒,☒,3,1,4,☒,4,8,☒,8,☒,8,☒,8,2,1,☒,1,3,1,☒,1,4,8,☒,8,☒,8,2,☒,2,1]
+     * @returns {[]} 混淆后的密码数组 eg [8,☒,☒,3,5,3,☒,7,2,☒,6,7,4]
      */
     let confusePassword = (password, char) => {
         //复制一份，防止修改传入参数
-        password = password.concat(password);
+        password = password.concat();
+        //保存已经混淆的密码和它在ans中的下标，如，[[3,3],...]，表示密码3在ans的下标为3
         let stack = [];
         let ans = [];
         password = password.reverse();
         while (password.length > 0) {
-            //下一个插入的字符在passWord中（还是字符-删除）
-            let choosePassword = Math.random() < (ans.length > this.passWrodLength * 2 ? this.numberProbability.big : this.numberProbability.normal);
+            //下一个插入的字符是密码还是删除
+            let choosePassword = Math.random() < this.numberProbability;
             if (choosePassword && !isContinuous(ans, this.passwordCharSet, this.maxContinuousLength)) {
                 let pop = password.pop();
-                stack.push(pop);
                 ans.push(pop);
+                stack.push([pop, ans.length - 1]);
             } else if (!isContinuous(ans, char, this.maxContinuousLength)) {
                 if (stack.length > 0) {
-                    password.push(stack.pop());
+                    let p = stack.pop();
+                    password.push(p[0]);
+                    //替换会被删除的字符成随机字符
+                    let index = Math.floor(Math.random() * this.passwordCharSet.length);
+                    ans[p[1]] = this.passwordCharSet[index];
                 }
                 ans.push(char);
             }
         }
-        return replace(ans);
-    };
-
-    /**
-     * 替换混淆后会被删除的字符
-     * @param confusedPassword 被替换数组 eg，[☒,☒,3,1,4,☒,☒,1,☒,1,4,☒,☒,☒,3,1,4,☒,4,8,☒,8,☒,8,☒,8,2,1,☒,1,3,1,☒,1,4,8,☒,8,☒,8,2,☒,2,1]
-     * @returns {[]} 返回替换后的数组 eg，[☒,☒,7,5,2,☒,☒,8,☒,5,3,☒,☒,☒,3,1,0,☒,4,7,☒,9,☒,0,☒,8,2,3,☒,1,3,9,☒,1,4,0,☒,7,☒,8,2,☒,2,1]
-     */
-    let replace = (confusedPassword) => {
-        let slice = confusedPassword.slice();
-        let deleteCharCount = 0;
-        for (let i = slice.length - 1; i > 0; i--) {
-            if (slice[i] === this.deleteChar) {
-                deleteCharCount++;
-            } else if (deleteCharCount > 0) {
-                let index = Math.floor(Math.random() * this.passwordCharSet.length);
-                slice[i] = this.passwordCharSet[index];
-                deleteCharCount--;
-            }
-        }
-        return slice;
+        return ans;
     };
 }

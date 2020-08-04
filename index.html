@@ -13,11 +13,19 @@
 </head>
 <body>
 <p id="password" style="font-size: 2em"></p>
-<script type="text/javascript" src="PasswordObfuscation.js"></script>
+<div id="qrcode"></div>
+<script type="text/javascript" src="PswO.js"></script>
+<script type="text/javascript" src="qrcode.min.js"></script>
 <script type="text/javascript">
-    let passwordObfuscation = new PasswordObfuscation("0123456789", "☒", 6);
-    let password = passwordObfuscation.create();
-    document.getElementById("password").innerText = password;
+    //生成混淆密码对
+    let psw = new PswO("0123456789", "☒", 6).create();
+    document.getElementById("password").innerText = psw[0];
+    //生成二维码
+    let qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: psw[1],
+        width: 128,
+        height: 128
+    });
 </script>
 </body>
 </html>
