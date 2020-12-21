@@ -14,12 +14,15 @@
 <body>
 <p id="password" style="font-size: 2em"></p>
 <div id="qrcode"></div>
+<p id="randomNumber" style="font-size: 2em"></p>
 <script type="text/javascript" src="PswO.js"></script>
 <script type="text/javascript" src="qrcode.min.js"></script>
 <script type="text/javascript">
     //生成混淆密码对
     let psw = new PswO("0123456789", "☒", 6).create();
     document.getElementById("password").innerText = psw[0];
+    //8位密码电脑用
+    document.getElementById("randomNumber").innerText = parseInt(Math.random()*1e8);
     //生成二维码
     let qrcode = new QRCode(document.getElementById("qrcode"), {
         text: psw[1],
