@@ -22,7 +22,7 @@
     let psw = new PswO("0123456789", "☒", 6).create();
     document.getElementById("password").innerText = psw[0];
     //8位密码电脑用
-    document.getElementById("randomNumber").innerText = parseInt(Math.random()*1e8);
+    document.getElementById("randomNumber").innerText = parseInt(Math.random()*1e12);
     //生成二维码
     let qrcode = new QRCode(document.getElementById("qrcode"), {
         text: psw[1],
